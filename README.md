@@ -13,16 +13,17 @@
 </div>
 
 ```text
-  ____   ___    __  ___            _     _
- / __ | / _ |  /  |/  /___ ______ (_)___(_)____
-/ /_/ |/ __ | / /|_/ / _ `/ __/ // (_-< / _ \
-\____/_/ |_|/_/  /_/\_,_/_/  \_,_/___/_/\___/
+ ____  ____     _   _ _____ _   _ _  __      _    ____ ___ _
+|  _ \|  _ \   | | | |  ___| | | | |/ /     / \  / ___|_ _| |
+| | | | |_) |  | | | | |_  | | | | ' /     / _ \ \___ \| || |
+| |_| |  _ <   | |_| |  _| | |_| | . \    / ___ \ ___) | || |___
+|____/|_| \_\   \___/|_|    \___/|_|\_\  /_/   \_\____/___|_____|
 ```
 
 > [!IMPORTANT]
 > Gemini 3 preview "indirilen bir program" degil, Google Cloud Vertex AI uzerinden API ile kullanilan bir model ailesidir.
 
-## 0) Yol Haritasi
+## 0) Yol Haritasi bak mermaid kodumuza nasılda kurulum gerektirmeden çalışıyor !
 
 ```mermaid
 flowchart LR
@@ -64,7 +65,7 @@ Ollama API varsayilan olarak burada calisir: `http://localhost:11434`
 ollama run gemini-3-flash-preview
 ```
 
-Bu komutun amaci farki gostermek: `gemini-3-flash-preview` bir Ollama modeli degildir, Vertex AI modelidir.
+Bu komutun amaci farki gostermek: `gemini-3-flash-preview` bir Ollama modeli degildir, Vertex AI modelidir. Ama kodumuz bu cloud ile çalışmaktadır. O yüzden gemma ile çalıştığını dene ve bununda çalıştığından emin ol. Her hangi bir para ödemene gerek yok kota sınırı var okadar !
 
 ## 2) Google Cloud Gemini 3 Preview (Vertex AI)
 
