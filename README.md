@@ -18,54 +18,33 @@
 | | | | |_) |  | | | | |_  | | | | ' /     / _ \ \___ \| || |
 | |_| |  _ <   | |_| |  _| | |_| | . \    / ___ \ ___) | || |___
 |____/|_| \_\   \___/|_|    \___/|_|\_\  /_/   \_\____/___|_____|
+ _  ___     _    _   _ ____  _____   _   _  ___  ____    ____ _____ _     ____ ___ _   _
+| |/ / |   | |  | | | | __ )| ____| | | | |/ _ \/ ___|  / ___| ____| |   |_   _|_ _| \ | |
+| ' /| |   | |  | | | |  _ \|  _|   | |_| | | | \___ \ | |  _|  _| | |     | |  | ||  \| |
+| . \| |___| |__| |_| | |_) | |___  |  _  | |_| |___) || |_| | |___| |___  | |  | || |\  |
+|_|\_\_____|_____\___/|____/|_____| |_| |_|\___/|____/  \____|_____|_____| |_| |___|_| \_|
 ```
 
 > [!IMPORTANT]
 > Gemini 3 preview "indirilen bir program" degil, Google Cloud Vertex AI uzerinden API ile kullanilan bir model ailesidir.
 
-## 0) Yol Haritasi bak mermaid kodumuza nasılda kurulum gerektirmeden çalışıyor !
+## 0) Ogrenci Icin Tek Adim
 
-```mermaid
-flowchart LR
-    A[Ollama kur] --> B[Local model calistir]
-    B --> C[Google Cloud proje + auth]
-    C --> D[Gemini 3 preview API cagir]
-```
+1. Ollama'yi bir kez kur: https://docs.ollama.com/windows
+2. Bu klasorde sadece `BASLAT.bat` calistir.
+3. Hepsi bu kadar.
 
-## 1) Ollama Kurulumu (Local AI)
+> [!IMPORTANT]
+> Ogrenci tarafinda ekstra komut gerekmez. `BASLAT.bat` gerekli durumda `kurulum.bat` dosyasini otomatik cagirir ve ortami kendi kurar.
 
-### Windows
-1. `OllamaSetup.exe` ile kurulum yap:  
-   https://docs.ollama.com/windows
-2. Terminali yeniden ac.
-3. Kontrol et:
+## 1) BASLAT Calisinca Ne Oluyor?
 
-```powershell
-ollama -v
-```
+1. `BASLAT.bat` önce `.venv` var mi kontrol eder.
+2. Yoksa `kurulum.bat` otomatik calisir; Python 3 kontrolu, `.venv` olusturma, `pip` guncelleme ve `requirements.txt` paket kurulumu yapilir.
+3. Sonra `main.pyw` arka planda acilir.
+4. Uygulama varsayilan olarak `gemma3:1b` modeliyle Ollama'ya istek atar.
 
-### Linux
-
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-ollama -v
-```
-
-### Ilk modelini calistir
-
-```powershell
-ollama run gemma3
-```
-
-Ollama API varsayilan olarak burada calisir: `http://localhost:11434`
-
-### Terminalde bunu da yazin (egitim notu)
-
-```powershell
-ollama run gemini-3-flash-preview
-```
-
-Bu komutun amaci farki gostermek: `gemini-3-flash-preview` bir Ollama modeli degildir, Vertex AI modelidir. Ama kodumuz bu cloud ile çalışmaktadır. O yüzden gemma ile çalıştığını dene ve bununda çalıştığından emin ol. Her hangi bir para ödemene gerek yok kota sınırı var okadar !
+Ollama API varsayilan adresi: `http://localhost:11434`
 
 ## 2) Google Cloud Gemini 3 Preview (Vertex AI)
 
@@ -119,15 +98,16 @@ print(response.text)
 ```
 
 
-## 3) Mini Ogrenci Challenge
+## 3) Mini Ogrenci Challenge (Opsiyonel)
 1. Terminalde su komutu yaz: `ollama run gemini-3-flash-preview`
-2. Sonra Ollama'da gecerli bir modelle sor: `ollama run gemma3`
+2. Sonra Ollama'da gecerli bir modelle sor: `ollama run gemma3:1b`
 3. Ayni soruyu Gemini 3 preview ile sor.
 4. Cevaplari hiz, detay ve dogruluk acisindan karsilastir.
 
 ## 4) Hata Cozme Kisa Notlari
 - `403` alirsan: Billing, Vertex AI API ve IAM rol (`roles/aiplatform.user`) kontrol et.
 - `401` alirsan: `gcloud auth application-default login` komutunu yeniden calistir.
+- `ollama model not found` alirsan once su komutu calistir: `ollama run gemma3:1b`
 - `Model not found` alirsan: model ID'yi kontrol et (`gemini-3-flash-preview`, `gemini-3-pro-preview`, `gemini-3.1-pro-preview`).
 
 ## Kaynaklar (Resmi)
