@@ -30,7 +30,8 @@ K   K  LLLLL   UUU   BBBB   EEEEE         H   H   OOO   SSSS           GGG   EEE
 
 ## 0) Ogrenci Icin Tek Adim
 
-1. Ollama'yi bir kez kur: https://docs.ollama.com/windows
+1. Ollama'yi bir kez kur: https://docs.ollama.com/windows models kısmına gir https://ollama.com/library  ve gemini 3 preview cloud modelinini çalıştır yetki giriş gerekecek. ollama artık lokalinde bir LLM olarak sana hizmet vermeye hazır .
+
 2. Bu klasorde sadece `BASLAT.bat` calistir.
 3. Hepsi bu kadar.
 
