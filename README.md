@@ -1,121 +1,88 @@
-# AI Asistan Kampusu
+# ScribbleSense AI - Dil Öğrenme Koçu & Masaüstü Asistanı
 
 <div align="center">
 
-### Sekilli Sukullu Ogrenci Baslangic Rehberi
-
-`Local AI + Cloud AI = Daha hizli ogrenme`
+`Local AI + TTS + Deep Learning = Akıllı Dil Öğrenme Deneyimi`
 
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-111827?style=for-the-badge)](https://docs.ollama.com/quickstart)
-[![Gemini 3 Preview](https://img.shields.io/badge/Gemini%203-Preview-0f766e?style=for-the-badge)](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/get-started-with-gemini-3)
-[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Vertex%20AI-1a73e8?style=for-the-badge)](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/quickstart)
+[![Fork Info](https://img.shields.io/badge/Forked%20From-Ufuk%20As%C4%B1l-orange?style=for-the-badge)](https://github.com/u-asil)
 
 </div>
 
-```text
- ____  ____     _   _ _____ _   _ _  __      _    ____ ___ _
-|  _ \|  _ \   | | | |  ___| | | | |/ /     / \  / ___|_ _| |
-| | | | |_) |  | | | | |_  | | | | ' /     / _ \ \___ \| || |
-| |_| |  _ <   | |_| |  _| | |_| | . \    / ___ \ ___) | || |___
-|____/|_| \_\   \___/|_|    \___/|_|\_\  /_/   \_\____/___|_____|
-K   K  L      U   U  BBBB   EEEEE         H   H   OOO    SSSS          GGG   EEEEE  L      DDDD   IIIII  N   N           !
-K  K   L      U   U  B   B  E             H   H  O   O  S             G      E      L      D   D    I    NN  N           !
-KKK    L      U   U  BBBB   EEE           HHHHH  O   O   SSS          G  GG  EEE    L      D   D    I    N N N           !
-K  K   L      U   U  B   B  E             H   H  O   O      S         G   G  E      L      D   D    I    N  NN
-K   K  LLLLL   UUU   BBBB   EEEEE         H   H   OOO   SSSS           GGG   EEEEE  LLLLL  DDDD   IIIII  N   N           !
-```
+---
 
-> [!IMPORTANT]
-> Gemini 3 preview "indirilen bir program" degil, Google Cloud Vertex AI uzerinden API ile kullanilan bir model ailesidir.
+## 📖 Proje Hakkında
+Bu proje, **Ufuk Asıl** tarafından geliştirilen "AI Asistan Kampüsü" projesi temel alınarak fork edilmiş ve üzerinde kapsamlı geliştirmeler yapılarak bir **"Dil Öğrenme Koçu"** haline getirilmiştir. 
 
-## 0) Ogrenci Icin Tek Adim
+ScribbleSense AI, bilgisayarınızda (PDF, Word, Tarayıcı vb.) seçtiğiniz herhangi bir metni tek bir kısayol tuşuyla (**F8**) analiz eder, sesli telaffuz eder ve size o metnin gramer yapısını öğreten bir asistan vazifesi görür.
 
-1. Ollama'yi bir kez kur: https://docs.ollama.com/windows models kısmına gir https://ollama.com/library  ve gemini 3 preview cloud modelinini çalıştır yetki giriş gerekecek. ollama artık lokalinde bir LLM olarak sana hizmet vermeye hazır .
+---
 
-2. Bu klasorde sadece `BASLAT.bat` calistir.
-3. Hepsi bu kadar.
+## ✨ Yeni ve Gelişmiş Özellikler
 
-> [!IMPORTANT]
-> Ogrenci tarafinda ekstra komut gerekmez. `BASLAT.bat` gerekli durumda `kurulum.bat` dosyasini otomatik cagirir ve ortami kendi kurar.
+### 🎓 1. Dil Öğrenme Koçu (Gelişmiş Analiz)
+Yalnızca çeviri yapmakla kalmaz; seçili İngilizce metni parçalarına ayırır:
+- **Derin Gramer Analizi:** "Neden Öyle?" bölümüyle zaman kiplerini ve yapıları açıklar.
+- **3 Seviyeli Örnekler:** Aynı yapıyı Gündelik, Akademik ve Sokak Ağzı formatlarında örnekler.
+- **Kelime Analizi:** Zor kelimelerin kökenini (etimoloji) ve eş anlamlılarını sunar.
 
-## 1) BASLAT Calisinca Ne Oluyor?
+### 🔊 2. Akıllı Seslendirme (TTS)
+- **Doğal Telaffuz:** Dil Koçu modunda metni İngilizce aksanıyla otomatik olarak seslendirir.
+- **Tekrar Dinleme:** Sonuç ekranındaki buton ile telaffuzu istediğiniz kadar tekrar dinleyebilirsiniz.
 
-1. `BASLAT.bat` önce `.venv` var mi kontrol eder.
-2. Yoksa `kurulum.bat` otomatik calisir; Python 3 kontrolu, `.venv` olusturma, `pip` guncelleme ve `requirements.txt` paket kurulumu yapilir.
-3. Sonra `main.pyw` arka planda acilir.
-4. Uygulama varsayilan olarak `gemma3:1b` modeliyle Ollama'ya istek atar.
+---
 
-Ollama API varsayilan adresi: `http://localhost:11434`
+## 🚀 Kurulum ve Başlatma
 
-## 2) Google Cloud Gemini 3 Preview (Vertex AI)
+Programın çalışması için gerekli kütüphaneler bir sanal ortamda (`.venv`) tutulmaktadır. Doğrudan `python3 main.pyw` komutu hata verecektir.
 
-### Once gerekli olanlar
-- Google Cloud projesi
-- Billing acik olmali
-- Vertex AI API aktif olmali
-- `gcloud` CLI kurulu olmali
+### 🐧 Linux İşlemleri
+1. **Bağımlılıkları Kurun:**
+   ```bash
+   bash kurulum.sh
+   ```
+2. **Programı Başlatın:**
+   Sanal ortamı aktif ederek çalıştırmanız gerekir:
+   ```bash
+   source .venv/bin/activate
+   python main.pyw
+   ```
+   *Veya alternatif olarak:* `./.venv/bin/python main.pyw`
 
-### gcloud giris ve kimlik
+### 🪟 Windows İşlemleri
+1. `kurulum.bat` dosyasını çalıştırın.
+2. `BASLAT.bat` dosyasını çalıştırarak uygulamayı açın (Bu dosya sanal ortamı otomatik kullanır).
 
-```powershell
-gcloud init
-gcloud auth application-default login
-```
+---
 
-### Proje ve API ayari
+## 🔧 Kullanım Rehberi
 
-```powershell
-gcloud config set project YOUR_PROJECT_ID
-gcloud services enable aiplatform.googleapis.com
-```
+1. Herhangi bir doküman (PDF, Kitap, Web Sayfası vb.) açın.
+2. Öğrenmek istediğiniz metni seçin.
+3. Klavyeden **Shift + Alt + G** tuş kombinasyonuna basın.
+4. Açılan menüden **"🎓 Dil Öğrenme Koçu"** veya diğer AI modlarını seçin.
 
-### Python SDK kurulumu
+---
 
-```powershell
-pip install --upgrade google-genai
-```
+## 🆘 Sorun Giderme
 
-### Ortam degiskenleri (PowerShell)
+### `ModuleNotFoundError: No module named 'pyperclip'`
+Bu hata, sanal ortamı (`.venv`) aktif etmediğinizde oluşur. Lütfen yukarıdaki "Başlatma" adımlarını takip edin: `source .venv/bin/activate`
 
-```powershell
-$env:GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-$env:GOOGLE_CLOUD_LOCATION="global"
-$env:GOOGLE_GENAI_USE_VERTEXAI="True"
-```
+### `sudo: apt-get: command not found`
+Eğer `kurulum.sh` çalışırken bu hatayı alıyorsanız, sisteminiz Ubuntu/Debian tabanlı değildir. Kendi paket yöneticinizle şu paketleri kurun:
+- **Fedora:** `sudo dnf install python3-tkinter espeak`
+- **Arch:** `sudo pacman -S tk espeak-ng`
 
-### Ilk Gemini 3 Preview istegi
+---
 
-```python
-from google import genai
+## 🛠️ Teknoloji Yığını
+- **Shortkey:** Shift + Alt + G (Global)
+- **Intelligence:** Ollama (Local LLM) / Google Gemini
+- **Voice:** `pyttsx3` (Offline TTS)
+- **GUI:** `Tkinter`
 
-client = genai.Client()
+---
 
-response = client.models.generate_content(
-    model="gemini-3-flash-preview",
-    contents="Merhaba! Bana 3 maddede Python'da for dongusunu anlat.",
-)
-
-print(response.text)
-```
-
-
-## 3) Mini Ogrenci Challenge (Opsiyonel)
-1. Terminalde su komutu yaz: `ollama run gemini-3-flash-preview`
-2. Sonra Ollama'da gecerli bir modelle sor: `ollama run gemma3:1b`
-3. Ayni soruyu Gemini 3 preview ile sor.
-4. Cevaplari hiz, detay ve dogruluk acisindan karsilastir.
-
-## 4) Hata Cozme Kisa Notlari
-- `403` alirsan: Billing, Vertex AI API ve IAM rol (`roles/aiplatform.user`) kontrol et.
-- `401` alirsan: `gcloud auth application-default login` komutunu yeniden calistir.
-- `ollama model not found` alirsan once su komutu calistir: `ollama run gemma3:1b`
-- `Model not found` alirsan: model ID'yi kontrol et (`gemini-3-flash-preview`, `gemini-3-pro-preview`, `gemini-3.1-pro-preview`).
-
-## Kaynaklar (Resmi)
-- Ollama Quickstart: https://docs.ollama.com/quickstart
-- Ollama Windows: https://docs.ollama.com/windows
-- Ollama Linux: https://docs.ollama.com/linux
-- Vertex AI Quickstart: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/quickstart
-- Gemini 3 Baslangic: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/start/get-started-with-gemini-3
-- Gemini 3 Pro Model: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/3-pro
-- Gemini 3 Flash Model: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/3-flash
+## 🤝 Teşekkür
+Bu projenin temellerini atan ve fikir babası olan **Ufuk Asıl**'a katkılarından dolayı teşekkür ederiz. Orijinal projeye [buradan](https://github.com/ufukasia/Introduction-to-Data-Visualization-Project-Assignment) ulaşabilirsiniz.
