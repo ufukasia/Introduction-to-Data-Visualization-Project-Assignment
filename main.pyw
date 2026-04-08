@@ -9,6 +9,9 @@ import requests
 import queue
 import pyttsx3
 import platform
+from gtts import gTTS
+import os
+import pygame
 
 
 # --- AYARLAR ---
@@ -30,38 +33,61 @@ root = None
 gui_queue = queue.Queue()
 kisayol_basildi = False
 
-# --- TTS (SESLENDİRME) AYARLARI ---
-engine = pyttsx3.init()
+# --- YÜKSEK KALİTELİ SES (gTTS) AYARLARI ---
 def setup_tts():
     try:
-        voices = engine.getProperty('voices')
-        # İngilizce sesi bulmaya çalış (Daha güvenli yöntem)
-        for voice in voices:
-            # Bazı sistemlerde 'languages' listesi, bazılarında ise 'id' içinde dil bilgisi olur
-            v_langs = getattr(voice, 'languages', [])
-            v_id = str(voice.id).lower()
-            
-            if any("en" in str(l).lower() for l in v_langs) or "english" in v_id or "en-us" in v_id:
-                engine.setProperty('voice', voice.id)
-                break
-        
-        engine.setProperty('rate', 150)  # Konuşma hızı
+        pygame.mixer.init()
+        print("✅ Yüksek kaliteli ses motoru (Neural) hazır.")
     except Exception as e:
-        print(f"⚠️ TTS Kurulum Hatası: {e}")
+        print(f"⚠️ Ses Kartı Başlatma Hatası: {e}")
 
-threading.Thread(target=setup_tts, daemon=True).start()
+setup_tts()
 
 def speak_text(text):
-    """Metni sesli oku (ayrı thread'de)."""
+    """Metni gTTS ile yüksek kalitede seslendirir. Pygame veya sistem oynatıcı kullanır."""
     def run_speech():
+        temp_file = "voice_temp.mp3"
         try:
-            # Sadece ana cümleyi veya kısa özeti okumak daha iyi olabilir
-            # Şimdilik gönderilen metni oku
-            engine.say(text)
-            engine.runAndWait()
+            # Markdown işaretlerini temizle
+            cleaned_text = text.replace("**", "").replace("#", "").replace("*", "").replace("- ", ", ")
+            
+            # Metni Google TTS ile oluştur
+            tts = gTTS(text=cleaned_text, lang='en', tld='com')
+            tts.save(temp_file)
+            
+            # --- YÖNTEM 1: Pygame (Öncelikli) ---
+            try:
+                if not pygame.mixer.get_init():
+                    pygame.mixer.init()
+                pygame.mixer.music.load(temp_file)
+                pygame.mixer.music.play()
+                while pygame.mixer.music.get_busy():
+                    time.sleep(0.1)
+                pygame.mixer.music.unload()
+                return # Başarılı ise çık
+            except Exception as e:
+                print(f"ℹ️ Pygame ile ses çalınamadı, yedek yönteme geçiliyor... ({e})")
+
+            # --- YÖNTEM 2: Sistem Oynatıcıları (Yedek) ---
+            # Fedora/Ubuntu'da bulunabilecek yaygın oynatıcılar
+            players = ["mpg123", "play", "vlc --play-and-exit", "paplay", "aplay"]
+            for player in players:
+                # vlc dışındakiler genelde sessiz çalışır, vlc için extra flag gerekebilir
+                cmd = f"{player} {temp_file} > /dev/null 2>&1"
+                if os.system(cmd) == 0:
+                    return # Başarılı ise çık
+
         except Exception as e:
-            print(f"⚠️ Seslendirme Hatası: {e}")
-    
+            print(f"⚠️ Seslendirme hatası: {e}")
+        finally:
+            if os.path.exists(temp_file):
+                try:
+                    # Bir saniye bekle (dosya kilitli kalmış olabilir)
+                    time.sleep(0.5)
+                    os.remove(temp_file)
+                except:
+                    pass
+
     threading.Thread(target=run_speech, daemon=True).start()
 
 
@@ -75,12 +101,15 @@ ISLEMLER = {
     "🐍 Python Koduna Çevir": "Bu metindeki isteği yerine getiren bir Python kodu yaz. Sadece kodu ver.",
     "📧 Cevap Yaz (Mail)": "Bu gelen bir e-posta, buna kibar ve profesyonel bir cevap metni taslağı yaz.",
     "🎓 Dil Öğrenme Koçu": (
-        "Seçili metin bir İngilizce kelime veya cümle ise, şu analizleri Türkçe yap:\n"
-        "1. ANLAM: Cümlenin/kelimenin doğal Türkçe çevirisi.\n"
-        "2. NEDEN ÖYLE? (GRAMER): Cümledeki zaman kipi (tense) ve önemli gramer yapılarını açıkla.\n"
-        "3. ÖRNEKLER: Bu yapıyı kullanan 3 örnek cümle ver (1-Gündelik, 2-Akademik, 3-Sokak Ağzı),\n"
-        "4. KRİTİK KELİMELER: Cümledeki zor kelimelerin kökenini ve 1'er eş anlamlısını yaz.\n"
-        "Yanıtı temiz ve başlıklandırılmış bir şekilde ver."
+        "SADECE aşağıdaki şablona göre cevap ver. Başka hiçbir şey yazma.\n\n"
+        "ŞABLON:\n"
+        "📝 **ORİJİNAL METİN**\n[İngilizce Metin]\n\n"
+        "🇹🇷 **ANLAMI**\n[Doğal Türkçe Çeviri]\n\n"
+        "🔊 **TÜRKÇE OKUNUŞ (Yaklaşık)**\n[Örn: Ay woz ap örli in dı mornink]\n\n"
+        "🧠 **PARÇALAYARAK ANLAM**\n[Kelime -> Anlam]\n\n"
+        "⚡ **DOĞAL CÜMLE**\n[Akıcı Türkçe Çeviri]\n\n"
+        "💡 **KISA NOT**\n[Gramer veya kelime notu]\n\n"
+        "Analiz edilecek metin: "
     ),
     "🎮 PS5 Oyun Skor + Acımasız Yorum": (
         "Seçili metni bir PS5 oyunu adı olarak ele al. Aşağıdaki formatta Türkçe cevap ver:\n"
@@ -364,7 +393,7 @@ def menu_goster():
                 messagebox.showwarning,
                 (
                     "Secim Bulunamadi",
-                    "Lutfen once metin secin, sonra F8 ile menuyu acin.",
+                    "Lutfen once metin secin, sonra butona basin veya Shift + Alt + G yapin.",
                 ),
             )
         )
@@ -443,10 +472,92 @@ def on_release(key):
         except:
             pass
             
-        if k == KISAYOL_METIN or key == keyboard.Key.f8 or key == keyboard.Key.f9: # Eski tuşları da sıfırlayalım nolur nolmaz
+        if k == KISAYOL_METIN:
             kisayol_basildi = False
     except Exception:
         pass
+
+
+class FloatingButton:
+    def __init__(self, parent):
+        self.parent = parent
+        self.window = tk.Toplevel(parent)
+        self.window.title("ScribbleSense AI Trigger")
+        
+        # Pencere ayarları: Başlık çubuğunu kaldır ve her zaman üstte tut
+        self.window.overrideredirect(True)
+        self.window.attributes("-topmost", True)
+        
+        # Linux Wayland/X11 uyumluluğu için alfa (şeffaflık)
+        try:
+            self.window.attributes("-alpha", 0.85)
+        except:
+            pass
+
+        # Boyut ve Konum (Sağ alt köşe varsayılan)
+        self.width = 60
+        self.height = 60
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+        x = screen_width - self.width - 50
+        y = screen_height - self.height - 100
+        self.window.geometry(f"{self.width}x{self.height}+{x}+{y}")
+
+        # Görsel Tasarım
+        self.canvas = tk.Canvas(
+            self.window, 
+            width=self.width, 
+            height=self.height, 
+            bg="#121212", 
+            highlightthickness=0,
+            cursor="hand2"
+        )
+        self.canvas.pack()
+
+        # Yuvarlak Buton Çizimi
+        padding = 5
+        self.button_circle = self.canvas.create_oval(
+            padding, padding, self.width-padding, self.height-padding,
+            fill="#00d1b2", outline="#008f7a", width=2
+        )
+        
+        # Buton Üzerindeki Metin/Emoji
+        self.canvas.create_text(
+            self.width//2, self.height//2,
+            text="🤖", font=("Segoe UI", 18), fill="white"
+        )
+
+        # Olay Bağlamaları (Events)
+        self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.stop_drag)
+        
+        # Sürükleme değişkenleri
+        self.drag_data = {"x": 0, "y": 0}
+        self.moved = False
+
+    def on_click(self, event):
+        self.drag_data["x"] = event.x
+        self.drag_data["y"] = event.y
+        self.moved = False
+
+    def on_drag(self, event):
+        self.moved = True
+        deltax = event.x - self.drag_data["x"]
+        deltay = event.y - self.drag_data["y"]
+        x = self.window.winfo_x() + deltax
+        y = self.window.winfo_y() + deltay
+        self.window.geometry(f"+{x}+{y}")
+
+    def stop_drag(self, event):
+        if not self.moved:
+            # Tıklama gerçekleşti, menüyü göster
+            gui_queue.put((menu_goster, ()))
+        self.moved = False
+
+    def show(self):
+        self.window.deiconify()
+        self.window.lift()
 
 
 if __name__ == "__main__":
@@ -457,7 +568,7 @@ if __name__ == "__main__":
     print("🤖 AI Asistan - Metin İşleme")
     print("=" * 60)
     aktif_text_model = get_available_text_model()
-    print(f"📦 Metin İşleme (F8): {aktif_text_model}")
+    print(f"📦 Metin İşleme (Shift+Alt+G): {aktif_text_model}")
     print()
     print("🔧 Kullanım:")
     print("   Shift + Alt + G - Metin sec ve AI islemleri yap")

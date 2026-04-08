@@ -14,7 +14,7 @@
 ## 📖 Proje Hakkında
 Bu proje, **Ufuk Asıl** tarafından geliştirilen "AI Asistan Kampüsü" projesi temel alınarak fork edilmiş ve üzerinde kapsamlı geliştirmeler yapılarak bir **"Dil Öğrenme Koçu"** haline getirilmiştir. 
 
-ScribbleSense AI, bilgisayarınızda (PDF, Word, Tarayıcı vb.) seçtiğiniz herhangi bir metni tek bir kısayol tuşuyla (**F8**) analiz eder, sesli telaffuz eder ve size o metnin gramer yapısını öğreten bir asistan vazifesi görür.
+ScribbleSense AI, bilgisayarınızda (PDF, Word, Tarayıcı vb.) seçtiğiniz herhangi bir metni tek bir tıklamayla (**🤖 AI Butonu**) veya kısayol tuşuyla (**Shift + Alt + G**) analiz eder, sesli telaffuz eder ve size o metnin gramer yapısını öğreten bir asistan vazifesi görür.
 
 ---
 
@@ -59,7 +59,9 @@ Programın çalışması için gerekli kütüphaneler bir sanal ortamda (`.venv`
 
 1. Herhangi bir doküman (PDF, Kitap, Web Sayfası vb.) açın.
 2. Öğrenmek istediğiniz metni seçin.
-3. Klavyeden **Shift + Alt + G** tuş kombinasyonuna basın.
+3. Ekranda yüzen **🤖 AI Butonuna** tıklayın (veya **Shift + Alt + G** tuşlarına basın).
+    - *Not: Linux Fedora/Wayland gibi kullanıcıları için yüzen buton en güvenilir yöntemdir.*
+    - *Butonu farenizle istediğiniz yere sürükleyebilirsiniz.*
 4. Açılan menüden **"🎓 Dil Öğrenme Koçu"** veya diğer AI modlarını seçin.
 
 ---

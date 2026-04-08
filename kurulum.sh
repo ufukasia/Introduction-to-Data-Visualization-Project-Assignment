@@ -1,34 +1,64 @@
 #!/bin/bash
 
-# Renkli mesajlar için
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+# --- ScribbleSense AI Kurulum Betiği (Fedora/Ubuntu/Arch Uyumlu) ---
 
-echo -e "${BLUE}[1/4] Bağımlılıklar kontrol ediliyor...${NC}"
+echo "============================================================"
+echo "🚀 ScribbleSense AI Kurulumu Başlatılıyor..."
+echo "============================================================"
 
-# Python kontrolü
-if ! command -v python3 &> /dev/null
-then
-    echo -e "${RED}[HATA] python3 bulunamadı. Lütfen yükleyin.${NC}"
-    exit 1
+# Dağıtım tespiti
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=$ID
+else
+    OS=$(uname -s)
 fi
 
-# Linux sistem paketleri (pynput, pyautogui ve pyttsx3 için)
-echo -e "${BLUE}Sistem kütüphaneleri kontrol ediliyor (sudo yetkisi gerekebilir)...${NC}"
-sudo apt-get update
-sudo apt-get install -y python3-tk python3-dev xclip espeak libespeak1
+echo "[1/4] Dağıtım Tespiti: $OS"
 
-echo -e "${BLUE}[2/4] Sanal ortam oluşturuluyor...${NC}"
+case $OS in
+    fedora|centos|rhel)
+        echo "📦 Fedora tabanlı sistem tespit edildi. Gerekli kütüphaneler kuruluyor..."
+        sudo dnf install -y python3-devel SDL2-devel SDL2_image-devel SDL2_mixer-devel SDL2_ttf-devel freetype-devel mesa-libGL-devel gcc-c++
+        ;;
+    ubuntu|debian|kali|linuxmint)
+        echo "📦 Debian tabanlı sistem tespit edildi. Gerekli kütüphaneler kuruluyor..."
+        sudo apt-get update
+        sudo apt-get install -y python3-tk python3-venv python3-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev
+        ;;
+    arch|manjaro)
+        echo "📦 Arch tabanlı sistem tespit edildi. Gerekli kütüphaneler kuruluyor..."
+        sudo pacman -S --noconfirm tk sdl2 sdl2_image sdl2_mixer sdl2_ttf freetype2
+        ;;
+    *)
+        echo "⚠️  Bilinmeyen dağıtım ($OS). Lütfen SDL2 ve Python-devel paketlerini manuel kurun."
+        ;;
+esac
+
+echo -e "\n[2/4] Sanal ortam (.venv) oluşturuluyor..."
 if [ ! -d ".venv" ]; then
     python3 -m venv .venv
+    echo "✅ .venv oluşturuldu."
+else
+    echo "ℹ️ .venv zaten mevcut."
 fi
 
-echo -e "${BLUE}[3/4] pip güncelleniyor ve paketler kuruluyor...${NC}"
+echo -e "\n[3/4] pip güncelleniyor ve bağımlılıklar kuruluyor..."
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-echo -e "${GREEN}[OK] Kurulum tamamlandı!${NC}"
-echo -e "Uygulamayı başlatmak için: ${BLUE}python3 main.pyw${NC}"
+# Pygame kurulum kontrolü
+if python3 -c "import pygame" &> /dev/null; then
+    echo "✅ Pygame başarıyla kuruldu."
+else
+    echo "⚠️  Pygame derlenemedi! Sistemdeki ses oynatıcısı otomatik yedek olarak kullanılacak."
+fi
+
+echo -e "\n============================================================"
+echo "✅ Kurulum Tamamlandı!"
+echo "============================================================"
+echo "🚀 Uygulamayı başlatmak için:"
+echo "   source .venv/bin/activate"
+echo "   python main.pyw"
+echo "============================================================"

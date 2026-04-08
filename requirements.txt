@@ -6,4 +6,6 @@ sympy
 Pillow
 PyMuPDF
 pyttsx3
+gTTS
+pygame
 
