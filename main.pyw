@@ -1,3 +1,4 @@
+import sys
 import pyperclip
 from pynput import keyboard
 import pyautogui
@@ -8,13 +9,17 @@ import threading
 import requests
 import queue
 
+# Terminal encoding düzeltmesi (emoji ve Türkçe karakter desteği)
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 
 # --- AYARLAR ---
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_ADI = "gemini-3-flash-preview:latest"  # Ana model (F8)
+MODEL_ADI = "gemma4:31b-cloud"  # Ana model (F8)
 TEXT_MODEL_CANDIDATES = [
     MODEL_ADI,
-    "gemini-3-flash-preview:cloud",
+    "gemini-3-flash-preview:latest",  # Yedek model
 ]
 
 KISAYOL_METIN = keyboard.Key.f8  # Metin secimi icin kisayol
@@ -28,25 +33,10 @@ kisayol_basildi = False
 
 # --- MENÜ SEÇENEKLERİ VE PROMPT'LAR ---
 ISLEMLER = {
-    "📝 Gramer Düzelt": "Bu metni Türkçe yazım ve dil bilgisi kurallarına göre düzelt, resmi ve akıcı olsun. Sadece sonucu ver.",
-    "🇬🇧 İngilizceye Çevir": "Bu metni İngilizceye çevir. Sadece çeviriyi ver.",
-    "🇹🇷 Türkçeye Çevir": "Bu metni Türkçeye çevir. Sadece çeviriyi ver.",
-    "📑 Özetle (Madde Madde)": "Bu metni analiz et ve en önemli noktaları madde madde özetle.",
-    "💼 Daha Resmi Yap": "Bu metni kurumsal bir e-posta diline çevir, çok resmi olsun.",
-    "🐍 Python Koduna Çevir": "Bu metindeki isteği yerine getiren bir Python kodu yaz. Sadece kodu ver.",
-    "📧 Cevap Yaz (Mail)": "Bu gelen bir e-posta, buna kibar ve profesyonel bir cevap metni taslağı yaz.",
-    "🎮 PS5 Oyun Skor + Acımasız Yorum": (
-        "Seçili metni bir PS5 oyunu adı olarak ele al. Aşağıdaki formatta Türkçe cevap ver:\n"
-        "1) Oyun: <ad>\n"
-        "2) Topluluk Beğeni Skorları:\n"
-        "- Metacritic User Score: <değer veya 'bilgi yok'>\n"
-        "- OpenCritic / benzer eleştirmen ortalaması: <değer veya 'bilgi yok'>\n"
-        "- Oyuncu yorumu ortalaması (PS Store vb.): <değer veya 'bilgi yok'>\n"
-        "3) Hüküm: sadece 'IYI' veya 'KOTU'\n"
-        "4) Acımasız Yorum: 2-4 cümle, net ve sert.\n"
-        "Kurallar: Kesin bilmediğin puanı uydurma, onun yerine 'bilgi yok' yaz. "
-        "Yorumu skorlarla tutarlı kur."
-    ),
+    # --- 🗓️ Sınav ve Ders Planlayıcı ---
+    "📅 Sınav Çalışma Takvimi Oluştur": "Sen profesyonel bir eğitim asistanısın. Seçili metinde belirtilen sınav konusunu, sınav tarihini ve adayın günlük ayırabileceği çalışma süresini analiz et. Kalan günlere mantıklı bir şekilde yayılmış, Pomodoro tekniğine uygun (25dk çalışma + 5dk mola) saat saat planlanmış detaylı bir takvim hazırla. UYARI: Kesinlikle Markdown tablosu (| Hücre |) kullanma! Düz metin ekranında bozuk görünüyor. Onun yerine her günü kalın başlıklar, bol dikey boşluklar, oklar (->) ve emojiler kullanarak dikey madde imli bir liste şeklinde aşırı okunaklı ve düzenli olarak tasarla.",
+    "⏱️ Günlük Pomodoro Planı Yap": "Seçili metndeki çalışma konularını veya notlarını analiz et. Bu konuları bugün çalışmak üzere 25 dakikalık odaklanma ve 5 dakikalık mola periyotları (Pomodoro tekniği) şeklinde planla. UYARI: Kesinlikle tablo kullanma! Saat saat programlanmış detaylı bir yapılacaklar listesini (checklist), okunaklı dikey maddeler ve emojilerle hazırla.",
+    "📊 Konu Analizi ve Dağılımı": "Seçili metinde bahsedilen sınav veya ders içeriğini incele. Çalışılması gereken konuları stratejik önemlerine göre kategorize et. Taktikler ver. UYARI: Kesinlikle tablo kullanma! Konuları önem sırasına göre madde işaretleriyle (bullet points) ve rahat okunabilen paragraflar halinde listele."
 }
 
 
@@ -94,7 +84,7 @@ def ollama_cevap_al(prompt):
             },
         }
 
-        response = requests.post(OLLAMA_URL, json=payload, timeout=60)
+        response = requests.post(OLLAMA_URL, json=payload, timeout=300)
 
         if response.status_code == 200:
             result = response.json()
@@ -154,8 +144,15 @@ def secili_metni_kopyala(max_deneme=4):
     return ""
 
 
+PENCERE_MODUNDA_ACILACAKLAR = (
+    "Sınav Çalışma Takvimi Oluştur",
+    "Günlük Pomodoro Planı Yap",
+    "Konu Analizi ve Dağılımı",
+)
+
+
 def pencere_modunda_gosterilsin_mi(komut_adi):
-    return "PS5 Oyun Skor" in komut_adi
+    return any(anahtar in komut_adi for anahtar in PENCERE_MODUNDA_ACILACAKLAR)
 
 
 def sonuc_penceresi_goster(baslik, icerik):
@@ -241,7 +238,7 @@ def islemi_yap(komut_adi, secili_metin):
 
     if pencere_modunda_gosterilsin_mi(komut_adi):
         gui_queue.put((sonuc_penceresi_goster, (komut_adi, sonuc)))
-        print("âœ… SonuÃ§ ayrÄ± pencerede gÃ¶sterildi.")
+        print("✅ Sonuç ayrı pencerede gösterildi.")
         return
 
     time.sleep(0.2)
